@@ -1,46 +1,112 @@
 ﻿using System;
 
-public class Order<T>
-{
-    private T[] _items = new T[0];
+// 1- Define Delegate for event handler (the "contract")
+public delegate void OrderHandler(Order order);
 
+public enum OrderStatus
+{
+    Pending,
+    Completed,
+    Failed
+}
+
+public class Order
+{
+    public OrderItem[] Items = new OrderItem[0];
     public int Id { get; set; }
 	public Customer Customer { get; set; }
-	public OrderItem OrderItem { get; set; }
-	public bool Status { get; set; }
-	public DateTime CreateAt { get; set; }
-	//, DateTime createdAt
-	
-    public Order(int id, Customer cutomer, bool status)
+    public OrderStatus Status { get; set; } = OrderStatus.Pending;
+    public Order(int id, Customer cutomer)
 	{
 		this.Id = id;
 		this.Customer = cutomer;
-		this.Status = status;
-		//this.CreateAt = createdAt;
 	}
 
-	private int updateStock()
-	{
-		if(this.Status is true)
-		{
-			return this.OrderItem.Product.Stock -= this.OrderItem.Quantity;
-		}
-		return this.OrderItem.Product.Stock;
-
-    }
-
-	public void AddItem(T item)
-	{
-	
-		_items = _items.Append(item).ToArray();
-        
-    }
-    public void PrintItems()
+    public bool OrderIsEmpty => Items is null || Items.Length == 0;
+    public void AddItem(OrderItem item)
     {
-		foreach(T item in _items){
-            Console.WriteLine(item.ToString());
+        if (OrderIsEmpty)
+        {
+            Items = new OrderItem[] { item };
+        }
+        else
+        {
+            Items = Items.Append(item).ToArray();
         }
     }
-	public bool OrderIsEmpty => _items is null || _items.Length == 0;
-	public int ItemsNum => _items is null ? 0 : _items.Length;
+
+    public int ItemsNum => Items?.Length ?? 0;
+
+
+    public OrderStatus CompleteOrder() => Status = OrderStatus.Completed; 
+    public OrderStatus FailedOrder() => Status = OrderStatus.Failed; 
+}
+
+
+// Publisher class
+public class OrderProcess
+{
+    // 2. Declare an event based on that delegate
+    public event OrderHandler OrderCreated;
+
+    // Notify all subscribers (if any exist)
+    public void OnOrderCreated(Order order)
+    {
+        // Do order processing
+        Console.WriteLine($"Order #{order.Id} placed");
+        if(order.Status == OrderStatus.Completed)
+        {
+            OrderCreated?.Invoke(order);   // call event / raise the event
+        }
+        
+    }
+}
+
+// Subscriber class
+public class Stock
+{
+    /// 4. Subscribe to the event ...--> parameter is the class that has the event
+    public void Subscribe(OrderProcess process)
+    {
+        process.OrderCreated += OnOrderCreated;
+
+    }
+
+    public void OnOrderCreated(Order order)
+    {
+        Console.WriteLine("\n[Stock] Updating inventory...");
+
+        if (order.Status is OrderStatus.Completed)
+        {
+            foreach (OrderItem item in order.Items)
+            {
+                item.Product.Stock -= item.Quantity;
+            }
+        }
+        Console.WriteLine("stok done");
+    }
+}
+
+public class Payment
+{
+   
+    /// 4. Subscribe to the event ...--> parameter is the class that has the event
+    public void Subscribe(OrderProcess process)
+    {
+        process.OrderCreated += OnOrderCreated;
+
+    }
+
+    public void OnOrderCreated(Order order)
+    {
+        double TotalPrice = 0;
+        if (order.Status is OrderStatus.Completed)
+        {
+            foreach (OrderItem item in order.Items)
+            {
+                TotalPrice += item.ItemTotalPrice;
+            }
+        }
+        Console.WriteLine("the total price of order:" + order.Id + " is " + TotalPrice);
+    }
 }

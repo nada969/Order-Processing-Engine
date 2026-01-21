@@ -11,6 +11,7 @@ public class OrderItem
 		this.Product = product;
 		this.Quantity = quantity;
 	}
+	private double calTotalPrice() => this.Product.Price * this.Quantity;
+	public double ItemTotalPrice => calTotalPrice();
 
-	public double ItemTotalPrice() => this.Product.Price * this.Quantity;
 }
