@@ -80,7 +80,8 @@ public class Stock
         {
             foreach (OrderItem item in order.Items)
             {
-                item.Product.Stock -= item.Quantity;
+				item.Product.ReduceStock(item.Quantity);
+                // item.Product.Stock -= item.Quantity;
             }
         }
         Console.WriteLine("stok done");
