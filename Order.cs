@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 // 1- Define Delegate for event handler (the "contract")
 public delegate void OrderHandler<T>(Order<T> order);
