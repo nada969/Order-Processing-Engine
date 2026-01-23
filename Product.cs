@@ -13,5 +13,11 @@ public class Product
 		this.Price = price;
 		this.Stock = stock;
 	}
-
+	public void ReduceStock(int quantity)
+	{
+		if (quantity > Stock)
+        	throw new InvalidOperationException("Not enough stock");
+		
+    	Stock -= quantity;
+	}
 }

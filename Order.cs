@@ -116,6 +116,7 @@ public class Stock
         {
             foreach (var item in order.Items)
             {
+<<<<<<< HEAD
                 int oldQua = item.Product.Stock;
                 item.Product.Stock -= item.Quantity;
                 Console.WriteLine("Updating the inventory of "+ item.Product.Name +" from: " + oldQua+ " to be: " + item.Product.Stock);
@@ -132,6 +133,10 @@ public class Stock
                 int oldQua = item.Product.Stock;
                 item.Product.Stock += item.Quantity;
                 Console.WriteLine("Updating the inventory of " + item.Product.Name + " from: " + oldQua + " to be: " + item.Product.Stock);
+=======
+				item.Product.ReduceStock(item.Quantity);
+                // item.Product.Stock -= item.Quantity;
+>>>>>>> aebe2fa6ff070f67a58b63787626bd6a906ed48d
             }
         }
     }

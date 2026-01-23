@@ -2,10 +2,10 @@
 
 public class Customer
 {
-	//Fields
-	private int _id;
-	private string _name;
-	private string _email;
+	// //Fields
+	// private int _id;
+	// private string _name;
+	// private string _email;
     //Properties
     public int Id { get; set; }
 	public string Name { get; set; }
