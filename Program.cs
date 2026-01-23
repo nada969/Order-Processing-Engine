@@ -23,7 +23,7 @@ namespace OrderProcessingEngine
             Customer customer1 = new Customer(1, "Nada", "nada@gmail.com");
 
             // Create order
-            Order order1 = new Order(1, customer1);
+            Order<OrderItem> order1 = new Order<OrderItem>(1, customer1);
             Console.WriteLine("N.Items is Order1: "+order1.ItemsNum + "/ with the customer: " + customer1.Name);
             Console.WriteLine(order1.OrderIsEmpty);
             Console.WriteLine("----------------");
@@ -46,7 +46,7 @@ namespace OrderProcessingEngine
 
             // Raise events --> update stock & payment process
             Console.WriteLine(" Raise events");
-            OrderProcess process = new OrderProcess();
+            var process = new OrderProcess<OrderItem>();
             Stock stock = new Stock();
             Payment pay = new Payment();
 
@@ -57,16 +57,13 @@ namespace OrderProcessingEngine
             stock.Subscribe(process);
             pay.Subscribe(process); 
             //////////////////////////// EVENT FIRED second
-            process.OnOrderCreated(order1);
+            process.OnOrderCompleted(order1);
+            process.OnOrderFailed(order1);
            
+            order1.FailedOrder();
+            process.OnOrderCompleted(order1);
+            process.OnOrderFailed(order1);
 
-            Console.WriteLine(product1.Stock);
-            Console.WriteLine(product2.Stock);
-
-
-           
-
-            // Log results
 
             Console.ReadKey();
 
@@ -75,8 +72,3 @@ namespace OrderProcessingEngine
     }
 }
 
-
-/// To do:
-///     - generic in Order & order item
-///     - delegate
-///     - Events Ordersssssss
